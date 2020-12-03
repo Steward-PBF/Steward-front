@@ -15,6 +15,11 @@ const router = new Router({
       meta: { authenticationRequired: true },
     },
     {
+      path: '/mapa',
+      name: 'map',
+      component: () => import('./views/Map.vue'),
+    },
+    {
       path: '/logowanie',
       name: 'login',
       component: () => import('./views/Login.vue'),
