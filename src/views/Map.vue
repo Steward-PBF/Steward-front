@@ -1,16 +1,20 @@
 <template>
   <div class="map-page">
     <div class="mb-3">
-      <label for="provinces-string" class="col-form-label">Provinces as string</label>
+      <button class="btn btn-primary mr-2" @click="exportProvinces">
+        Export
+      </button>
+      <button class="btn btn-outline-primary" @click="$refs.fileInput.click()">
+        Import
+      </button>
       <input
-        id="provinces-string"
-        :value="JSON.stringify(provinces)"
-        type="text"
-        class="form-control"
-        readonly
+        ref="fileInput"
+        type="file"
+        class="d-none"
+        @change="importProvinces"
       >
     </div>
-    <MapSvg @click="onClick" />
+    <MapSvg @click="onSvgClick" />
     <div
       v-if="selectedProvinceId"
       id="exampleModal"
@@ -80,7 +84,7 @@ const DEFAULT_PROVINCE = {
 
 const provincesIds = Array(98)
   .fill(1)
-  .map((x, y) => `province-${x + y}`);
+  .map((x, y) => x + y);
 
 const provinces = provincesIds.reduce(
   (acc, id) => ({
@@ -102,9 +106,9 @@ export default {
     };
   },
   methods: {
-    async onClick({ target }) {
+    async onSvgClick({ target }) {
       if (target.id?.startsWith('province-')) {
-        this.selectedProvinceId = target.id;
+        this.selectedProvinceId = target.id.replace('province-', '');
         await this.$nextTick();
         const modalElement = document.getElementById('exampleModal');
         new Modal(modalElement).show();
@@ -112,6 +116,24 @@ export default {
           modalElement.getElementsByTagName('input')[0].focus();
         });
       }
+    },
+    exportProvinces() {
+      const file = new Blob([JSON.stringify(this.provinces)], { type: 'text/plain' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(file);
+      link.download = 'provinces.json';
+
+      link.click();
+    },
+    importProvinces({ target: { files } }) {
+      const fileReader = new FileReader();
+
+      fileReader.onload = ({ target: { result } }) => {
+        this.provinces = JSON.parse(result);
+        alert('Provinces imported!');
+      };
+
+      fileReader.readAsText(files[0], 'UTF-8');
     },
   },
 };
