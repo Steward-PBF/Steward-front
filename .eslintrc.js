@@ -11,5 +11,11 @@ module.exports = {
   rules: {
     'max-len': 'off',
     'no-param-reassign': ['error', { props: false }],
+    'vue/max-attributes-per-line': [
+      'warn',
+      {
+        singleline: 3,
+      },
+    ],
   },
 };
