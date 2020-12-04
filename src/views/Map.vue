@@ -70,7 +70,7 @@
 
 <script>
 import { Modal } from 'bootstrap';
-import MapSvg from '@/assets/world-map/003.svg?inline';
+import MapSvg from '@/assets/world-map/004.svg?inline';
 
 const DEFAULT_PROVINCE = {
   countryName: '',
@@ -118,19 +118,21 @@ export default {
 </script>
 
 <style lang="scss">
-.cls-1,
-.cls-2,
-.cls-3 {
-  stroke: #fff;
+.st0 {
+  stroke: #FFFFFF;
+  stroke-width: 4;
   stroke-miterlimit: 10;
 }
 
-.cls-1 {
-  stroke-width: 4px;
+.st1 {
+  stroke: #FFFFFF;
+  stroke-miterlimit: 10;
 }
 
-.cls-3 {
-  stroke-width: 2px;
+.st2 {
+  stroke: #FFFFFF;
+  stroke-width: 2;
+  stroke-miterlimit: 10;
 }
 
 .map-page {
