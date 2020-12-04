@@ -16,7 +16,6 @@
     </div>
     <MapSvg @click="onSvgClick" />
     <div
-      v-if="selectedProvinceId"
       id="exampleModal"
       class="modal fade"
       tabindex="-1"
@@ -25,7 +24,7 @@
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">
-              Insert province details
+              Insert details for province (ID: {{ selectedProvinceId }})
             </h5>
           </div>
           <div class="modal-body">
@@ -34,7 +33,7 @@
                 <label for="country-name" class="col-form-label">Country name:</label>
                 <input
                   id="country-name"
-                  v-model="provinces[selectedProvinceId].countryName"
+                  v-model="form.countryName"
                   type="text"
                   class="form-control"
                 >
@@ -43,7 +42,7 @@
                 <label for="province-name" class="col-form-label">Province name:</label>
                 <input
                   id="province-name"
-                  v-model="provinces[selectedProvinceId].provinceName"
+                  v-model="form.provinceName"
                   type="text"
                   class="form-control"
                 >
@@ -52,17 +51,22 @@
                 <label for="characteristics" class="col-form-label">Characteristics:</label>
                 <input
                   id="characteristics"
-                  :value="provinces[selectedProvinceId].characteristics.join(',')"
+                  :value="form.characteristics.join(',')"
                   type="text"
                   class="form-control"
                   multiple
-                  @input="provinces[selectedProvinceId].characteristics = $event.target.value.split(',')"
+                  @input="form.characteristics = $event.target.value.split(',')"
                 >
               </div>
             </form>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-primary" data-dismiss="modal">
+            <button
+              type="button"
+              class="btn btn-primary"
+              data-dismiss="modal"
+              @click="save"
+            >
               Save
             </button>
           </div>
@@ -73,7 +77,7 @@
 </template>
 
 <script>
-import { Modal } from 'bootstrap';
+import { Modal, Tooltip } from 'bootstrap';
 import MapSvg from '@/assets/world-map/004.svg?inline';
 
 const DEFAULT_PROVINCE = {
@@ -94,6 +98,12 @@ const provinces = provincesIds.reduce(
   {},
 );
 
+const getProvinceDesc = ({ provinceName, countryName, characteristics }) => `
+  Country: <b>${countryName}</b> </br>
+  Province: ${provinceName} </br>
+  Characteristics: ${characteristics}
+`;
+
 export default {
   name: 'Map',
   components: {
@@ -103,13 +113,31 @@ export default {
     return {
       selectedProvinceId: null,
       provinces,
+      form: { ...DEFAULT_PROVINCE },
     };
   },
+  mounted() {
+    this.setTooltips();
+  },
   methods: {
-    async onSvgClick({ target }) {
-      if (target.id?.startsWith('province-')) {
-        this.selectedProvinceId = target.id.replace('province-', '');
-        await this.$nextTick();
+    createTooltipForElement(element) {
+      return new Tooltip(element, {
+        title: getProvinceDesc(this.provinces[element.id]),
+        html: true,
+      });
+    },
+    save() {
+      this.provinces[this.selectedProvinceId] = { ...this.form };
+      this.createTooltipForElement(document.getElementById(this.selectedProvinceId));
+    },
+    setTooltips() {
+      [...document.getElementsByTagName('path')].map(this.createTooltipForElement);
+    },
+    async onSvgClick({ target: { id } }) {
+      if (id) {
+        this.form = { ...this.provinces[id] };
+        this.selectedProvinceId = id;
+
         const modalElement = document.getElementById('exampleModal');
         new Modal(modalElement).show();
         modalElement.addEventListener('shown.bs.modal', () => {
@@ -130,6 +158,7 @@ export default {
 
       fileReader.onload = ({ target: { result } }) => {
         this.provinces = JSON.parse(result);
+        this.setTooltips();
         alert('Provinces imported!');
       };
 
