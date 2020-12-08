@@ -169,29 +169,26 @@ export default {
 </script>
 
 <style lang="scss">
-.st0 {
-  stroke: #FFFFFF;
-  stroke-width: 4;
-  stroke-miterlimit: 10;
-}
-
-.st1 {
-  stroke: #FFFFFF;
-  stroke-miterlimit: 10;
-}
-
-.st2 {
-  stroke: #FFFFFF;
-  stroke-width: 2;
-  stroke-miterlimit: 10;
-}
-
 .map-page {
   width: 70%;
 
-  path:hover {
-    fill: red;
-    cursor: pointer;
+  svg {
+    background-color: #0f79a6;
+  }
+
+  .first-layer {
+    fill: #fff;
+  }
+
+  path {
+    stroke: #000;
+    stroke-width: 4;
+    stroke-miterlimit: 10;
+
+    &:hover {
+      fill: red;
+      cursor: pointer;
+    }
   }
 }
 </style>
